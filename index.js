@@ -90,23 +90,17 @@ async function run() {
       res.send(result)
     })
     
-  
+    app.delete('/crafts/id/:id',async(req,res)=>{
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await craftCollection.deleteOne(query)
+      res.send(result)
+    })
 
 
 
     //users database
-    app.post('/users',async(req,res)=>{
-        const user = req.body
-        console.log(user)
-        const result = await userCollection.insertOne(user)
-        res.send(result)
-    })
-
-    app.get('/users',async(req,res)=>{
-        const cursor = userCollection.find()
-        const users = await cursor.toArray()
-        res.send(users)
-    })
+ 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
