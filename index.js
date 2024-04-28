@@ -31,7 +31,7 @@ async function run() {
     await client.connect();
 
     const craftCollection = client.db('craftDB').collection('crafts')
-    // const userCollection = client.db('craftDB').collection('users')
+    const userCollection = client.db('craftDB').collection('users')
 
    
     app.post('/crafts',async(req,res)=>{
@@ -64,28 +64,54 @@ async function run() {
         const result = await cursor.toArray()
         res.send(result)
     })
+     
+    app.put('/crafts/id/:id',async(req,res)=>{
 
-   
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert:true}
+      const updatedCrafts = req.body
+      const crafts = {
+        $set:{
+         
+          Customize : updatedCrafts.Customize,
+          stock : updatedCrafts.stock,
+          processing : updatedCrafts.processing,
+          item_name : updatedCrafts.item_name,
+          photo: updatedCrafts.photo,
+          category: updatedCrafts.category,
+          price : updatedCrafts.price,
+          rating: updatedCrafts.rating,
+          description : updatedCrafts.description
+        }
+      } 
 
- 
-   
- 
-  
+      const result = await craftCollection.updateOne(filter,crafts,options)
+      res.send(result)
+    })
     
+    app.delete('/crafts/id/:id',async(req,res)=>{
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await craftCollection.deleteOne(query)
+      res.send(result)
+    })
+
+
 
     //users database
-    // app.post('/users',async(req,res)=>{
-    //     const user = req.body
-    //     console.log(user)
-    //     const result = await userCollection.insertOne(user)
-    //     res.send(result)
-    // })
+    app.post('/users',async(req,res)=>{
+        const user = req.body
+        console.log(user)
+        const result = await userCollection.insertOne(user)
+        res.send(result)
+    })
 
-    // app.get('/users',async(req,res)=>{
-    //     const cursor = userCollection.find()
-    //     const users = await cursor.toArray()
-    //     res.send(users)
-    // })
+    app.get('/users',async(req,res)=>{
+        const cursor = userCollection.find()
+        const users = await cursor.toArray()
+        res.send(users)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
