@@ -31,7 +31,7 @@ async function run() {
     await client.connect();
 
     const craftCollection = client.db('craftDB').collection('crafts')
-    const userCollection = client.db('craftDB').collection('users')
+    const newCollection = client.db('craftDB').collection('newcrafts')
 
    
     app.post('/crafts',async(req,res)=>{
@@ -99,19 +99,14 @@ async function run() {
 
 
 
-    //users database
-    app.post('/users',async(req,res)=>{
-        const user = req.body
-        console.log(user)
-        const result = await userCollection.insertOne(user)
-        res.send(result)
+    //new database
+
+    app.get('/newcrafts',async (req,res)=>{
+      const cursor = newCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
     })
 
-    app.get('/users',async(req,res)=>{
-        const cursor = userCollection.find()
-        const users = await cursor.toArray()
-        res.send(users)
-    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
