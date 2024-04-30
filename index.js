@@ -5,11 +5,9 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000;
 
-//9BCOyoE0OJjvctzG
 
-//Crimson-Pottery
 
-app.use(cors());
+app.use (cors({origin:["http://localhost:5173","https://assignment-ten-bd6ac.web.app"]}))
 app.use(express.json());
 
 
@@ -100,6 +98,13 @@ async function run() {
 
 
     //new database
+    app.get('/newcrafts/:id',async(req,res)=>{
+      const id = req.params.id 
+      const query = {_id: new ObjectId(id)}
+      const result = await newCollection.findOne(query)
+      res.send(result)
+    })
+
 
     app.get('/newcrafts',async (req,res)=>{
       const cursor = newCollection.find()
@@ -107,9 +112,21 @@ async function run() {
       res.send(result)
     })
 
+ 
+    app.get('/newcrafts/new/:subcategory_name',async(req,res)=>{
+     
+        console.log(req.params.subcategory_name)
+        const result = await newCollection.find({subcategory_name:req.params.subcategory_name}).toArray()
+        res.send(result)
+        
+      
+    }) 
+
+   
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
